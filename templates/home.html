@@ -21,7 +21,7 @@
     <tbody>
       {% for dance in dances %}
       <tr>
-        <td>{{ dance.name }}</td>
+        <td><a href="{{ dance.url }}">{{ dance.name }}</a></td>
         <td>{{ dance.status }}</td>
       </tr>
       {% endfor %}
