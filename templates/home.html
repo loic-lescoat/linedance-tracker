@@ -7,7 +7,9 @@
 </head>
 <body>
   <header>
+    <h1>
     Track your line-dance progress!
+    </h1>
   </header>
 
   <table>
@@ -15,9 +17,7 @@
       <tr>
         <th>Name</th>
         <th>Status</th>
-        <th></th>
-        <th></th>
-        <th></th>
+        <th>Increment Status</th>
       </tr>
     </thead>
 
@@ -34,9 +34,7 @@
             {{ dance.status }}
         </td>
 
-        <td><a href="/set_status?status=0&id={{ dance.id }}">0</a></td>
-        <td><a href="/set_status?status=1&id={{ dance.id }}">1</a></td>
-        <td><a href="/set_status?status=2&id={{ dance.id }}">2</a></td>
+        <td><a href="/increment?id={{ dance.id }}">+++++++++</a></td>
       </tr>
       {% endfor %}
 
