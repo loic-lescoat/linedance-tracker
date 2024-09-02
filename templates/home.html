@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Linedance-tracker</title>
+</head>
+<body>
+  <header>
+    Track your line-dance progress!
+  </header>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for dance in dances %}
+      <tr>
+        <td>{{ dance.name }}</td>
+        <td>{{ dance.status }}</td>
+      </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+
+  <footer>
+    <p>Playlist: <a href="https://open.spotify.com/playlist/1RIoKlZsye0xW3ZVpi8cQ9?si=udPkksVjS7GQZ8Mypkn99g&pi=u-sQQRpjjFSVST&nd=1&dlsi=7e3eadc61cdf4df0">Spotify</a> and <a href="https://listen.tidal.com/playlist/3b4d9529-f9e4-4e9f-9479-e25cc9239de2">Tidal</a>
+    </p>
+  </footer>
+</body>
+</html>
