@@ -15,14 +15,20 @@
       <tr>
         <th>Name</th>
         <th>Status</th>
+        <th>New status</th>
+        <th></th>
+        <th></th>
       </tr>
     </thead>
 
     <tbody>
       {% for dance in dances %}
       <tr>
-        <td><a href="{{ dance.url }}">{{ dance.name }}</a></td>
+        <td><a href="{{ dance.url }}" target="_blank">{{ dance.name }}</a></td>
         <td>{{ dance.status }}</td>
+        <td><a href="/set_status?status=0&id={{ dance.id }}">0</a></td>
+        <td><a href="/set_status?status=1&id={{ dance.id }}">1</a></td>
+        <td><a href="/set_status?status=2&id={{ dance.id }}">2</a></td>
       </tr>
       {% endfor %}
 

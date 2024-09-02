@@ -18,7 +18,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "--delete":
 cur = conn.cursor()
 cur.execute(
     """
-    create table dance_progress (name varchar, url varchar, status int)
+    create table dance_progress (id int, name varchar, url varchar, status int)
     """
 )
 
@@ -40,11 +40,12 @@ with yt_dlp.YoutubeDL(ydl_opts) as ydl:
 
 cur = conn.cursor()
 
-for vid in videos[0]["entries"]:
+for i, vid in enumerate(videos[0]["entries"]):
     title = vid["title"]
     if not title.startswith("Learn"):
         continue
+    title = title.lstrip("Learn ").split(" in")[0]
     url = vid["url"]
-    cur.execute("insert into dance_progress values (?, ?, 0)", (title, url))
+    cur.execute("insert into dance_progress values (?, ?, ?, 0)", (i, title, url))
 conn.commit()
 conn.close()
