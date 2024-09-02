@@ -15,7 +15,7 @@
       <tr>
         <th>Name</th>
         <th>Status</th>
-        <th>New status</th>
+        <th></th>
         <th></th>
         <th></th>
       </tr>
@@ -25,7 +25,15 @@
       {% for dance in dances %}
       <tr>
         <td><a href="{{ dance.url }}" target="_blank">{{ dance.name }}</a></td>
-        <td>{{ dance.status }}</td>
+        
+        <td style="background-color: 
+            {% if dance.status == 0 %}white
+            {% elif dance.status == 1 %}palegoldenrod
+            {% elif dance.status == 2 %}palegreen
+            {% endif %};">
+            {{ dance.status }}
+        </td>
+
         <td><a href="/set_status?status=0&id={{ dance.id }}">0</a></td>
         <td><a href="/set_status?status=1&id={{ dance.id }}">1</a></td>
         <td><a href="/set_status?status=2&id={{ dance.id }}">2</a></td>
