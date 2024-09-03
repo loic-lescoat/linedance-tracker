@@ -5,10 +5,15 @@ COPY requirements.txt .
 
 RUN python3 -m pip install -r requirements.txt
 
+COPY scrape.py .
+RUN python3 scrape.py
+
 COPY app.py .
-COPY templates/ templates/
-COPY dance-progress.db .
+COPY templates/*.html templates/
 
-EXPOSE 5000
+ARG PORT
+ENV PORT=${PORT}
 
-CMD flask --app app run -h 0.0.0.0 -p 5000
+EXPOSE $PORT
+
+CMD flask --app app run -h 0.0.0.0 -p $PORT
