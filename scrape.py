@@ -1,8 +1,11 @@
 import sqlite3
 import yt_dlp
 import sys
+import os
 
-conn = sqlite3.connect("dance-progress.db")
+STORAGE_DIR = os.environ["STORAGE_DIR"]
+
+conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
 cur = conn.cursor()
 
 if len(sys.argv) > 1 and sys.argv[1] == "--delete":

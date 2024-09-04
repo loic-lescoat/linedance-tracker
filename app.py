@@ -6,18 +6,21 @@ from flask import (
     redirect,
 )
 from collections import namedtuple
+import os
 
 import sqlite3
 
 
 dance = namedtuple("dance", ["id", "name", "url", "status"])
 
+STORAGE_DIR = os.environ["STORAGE_DIR"]
+
 app = Flask(__name__)
 
 
 @app.route("/")
 def home():
-    conn = sqlite3.connect("dance-progress.db")
+    conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
     cur = conn.cursor()
     dances_list = cur.execute(
         "select * from dance_progress order by status desc, name asc"
@@ -30,7 +33,7 @@ def home():
 @app.route("/increment/", methods=["GET"])
 def set_status():
     id = int(request.args["id"])
-    conn = sqlite3.connect("dance-progress.db")
+    conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
     cur = conn.cursor()
     status = int(
         cur.execute("select status from dance_progress where id = ?", (id,)).fetchone()[
@@ -41,4 +44,5 @@ def set_status():
         "update dance_progress set status = ? where id = ?", ((status + 1) % 3, id)
     )
     conn.commit()
+    conn.close()
     return redirect(url_for("home"))
