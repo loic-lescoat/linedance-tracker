@@ -10,6 +10,17 @@
     <h1>
     Track your line-dance progress!
     </h1>
+    <form method="post">
+      <input type="text" name="username">
+      <input type="submit" value="Log in">
+    </form>
+    <h3>
+      {% if username is not none %}
+      Logged in as {{ username }}
+      {% else %}
+      Not logged in
+      {% endif %}
+    </h3>
   </header>
 
   <table>

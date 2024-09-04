@@ -4,6 +4,7 @@ from flask import (
     render_template,
     url_for,
     redirect,
+    session,
 )
 from collections import namedtuple
 import os
@@ -16,10 +17,16 @@ dance = namedtuple("dance", ["id", "name", "url", "status"])
 STORAGE_DIR = os.environ["STORAGE_DIR"]
 
 app = Flask(__name__)
+app.secret_key = (
+    "my super secret keyhwuqbwefjhcuapjebqawihw"  # TODO move this somewhere else
+)
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def home():
+    if request.method == "POST":
+        session["username"] = request.form["username"]
+        return redirect(url_for("home"))
     conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
     cur = conn.cursor()
     dances_list = cur.execute(
@@ -27,7 +34,7 @@ def home():
     ).fetchall()
     conn.close()
     dances = [dance(*x) for x in dances_list]
-    return render_template("home.html", dances=dances)
+    return render_template("home.html", dances=dances, username=session.get("username"))
 
 
 @app.route("/increment/", methods=["GET"])
