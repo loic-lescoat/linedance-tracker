@@ -28,7 +28,9 @@
       <tr>
         <th>Name</th>
         <th>Status</th>
+        {% if username is not none %}
         <th>Increment Status</th>
+        {% endif %}
       </tr>
     </thead>
 
@@ -45,7 +47,9 @@
             {{ dance.status }}
         </td>
 
+        {% if username is not none %}
         <td><a href="/increment?id={{ dance.id }}">+++++++++</a></td>
+        {% endif %}
       </tr>
       {% endfor %}
 

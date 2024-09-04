@@ -29,8 +29,21 @@ def home():
         return redirect(url_for("home"))
     conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
     cur = conn.cursor()
+    username = session.get("username")
+    user_filter = (
+        f"""and progress.username = '{username}'""" if username is not None else ""
+    )
     dances_list = cur.execute(
-        "select * from dance_progress order by status desc, name asc"
+        f"""with t0 as (
+    select dances.id, dances.name, dances.url, progress.status
+    from dances
+    left join progress
+    on dances.id = progress.id
+    {user_filter}
+)
+select id, name, url, case when status is null then 0 else status end
+from t0
+order by status desc, name asc"""
     ).fetchall()
     conn.close()
     dances = [dance(*x) for x in dances_list]
@@ -42,14 +55,22 @@ def set_status():
     id = int(request.args["id"])
     conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
     cur = conn.cursor()
-    status = int(
-        cur.execute("select status from dance_progress where id = ?", (id,)).fetchone()[
-            0
-        ]
-    )
-    cur.execute(
-        "update dance_progress set status = ? where id = ?", ((status + 1) % 3, id)
-    )
+    username = session["username"]
+    status_obj = cur.execute(
+        "select status from progress where id = ? and username = ?", (id, username)
+    ).fetchone()
+    if status_obj is None:
+        new_status = 1
+        query = f"""
+                    insert into progress (username, id, status) values ('{username}', {id}, {new_status})
+                    """
+    else:
+        new_status = (status_obj[0] + 1) % 3
+        query = f"""
+                    update progress set status = {new_status}
+                    where username = '{username}' and id = '{id}'
+                    """
+    cur.execute(query)
     conn.commit()
     conn.close()
     return redirect(url_for("home"))

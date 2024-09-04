@@ -14,6 +14,11 @@ if len(sys.argv) > 1 and sys.argv[1] == "--delete":
         drop table dance_progress
         """
     )
+    cur.execute(
+        """
+        drop table users
+        """
+    )
     conn.commit()
     del cur
 
@@ -21,7 +26,12 @@ if len(sys.argv) > 1 and sys.argv[1] == "--delete":
 cur = conn.cursor()
 cur.execute(
     """
-    create table dance_progress (id int, name varchar, url varchar, status int)
+    create table dances (id int, name varchar, url varchar)
+    """
+)
+cur.execute(
+    """
+    create table progress (username varchar, id int, status int)
     """
 )
 
@@ -49,6 +59,6 @@ for i, vid in enumerate(videos[0]["entries"]):
         continue
     title = title.lstrip("Learn ").split(" in")[0]
     url = vid["url"]
-    cur.execute("insert into dance_progress values (?, ?, ?, 0)", (i, title, url))
+    cur.execute("insert into dances values (?, ?, ?)", (i, title, url))
 conn.commit()
 conn.close()
