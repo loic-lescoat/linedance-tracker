@@ -31,7 +31,9 @@ def home():
     cur = conn.cursor()
     username = session.get("username")
     user_filter = (
-        f"""and progress.username = '{username}'""" if username is not None else ""
+        f"""and progress.username = '{username}'"""
+        if username is not None
+        else "and 1 = 2"  # return no progress if not logged in
     )
     dances_list = cur.execute(
         f"""with t0 as (
