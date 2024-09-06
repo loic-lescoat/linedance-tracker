@@ -11,16 +11,19 @@
     Track your line-dance progress!
     </h1>
     <form method="post">
+      <b><label for="username">Username:</label></b>
       <input type="text" name="username">
       <input type="submit" value="Log in">
     </form>
-    <h3>
+    <p>
       {% if username is not none %}
-      Logged in as {{ username }}
+      Logged in as <b>{{ username }}</b>
       {% else %}
       Not logged in
       {% endif %}
-    </h3>
+    </p>
+    <p>Playlist: <a href="https://open.spotify.com/playlist/1RIoKlZsye0xW3ZVpi8cQ9?si=udPkksVjS7GQZ8Mypkn99g&pi=u-sQQRpjjFSVST&nd=1&dlsi=7e3eadc61cdf4df0">Spotify</a> and <a href="https://listen.tidal.com/playlist/3b4d9529-f9e4-4e9f-9479-e25cc9239de2">Tidal</a>
+    </p>
   </header>
 
   <table>
@@ -55,10 +58,5 @@
 
     </tbody>
   </table>
-
-  <footer>
-    <p>Playlist: <a href="https://open.spotify.com/playlist/1RIoKlZsye0xW3ZVpi8cQ9?si=udPkksVjS7GQZ8Mypkn99g&pi=u-sQQRpjjFSVST&nd=1&dlsi=7e3eadc61cdf4df0">Spotify</a> and <a href="https://listen.tidal.com/playlist/3b4d9529-f9e4-4e9f-9479-e25cc9239de2">Tidal</a>
-    </p>
-  </footer>
 </body>
 </html>
