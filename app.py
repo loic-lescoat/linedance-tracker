@@ -25,7 +25,8 @@ app.secret_key = (
 @app.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "POST":
-        session["username"] = request.form["username"]
+        if request.form["username"]:
+            session["username"] = request.form["username"]
         return redirect(url_for("home"))
     conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
     cur = conn.cursor()
@@ -50,6 +51,12 @@ order by status desc, name asc"""
     conn.close()
     dances = [dance(*x) for x in dances_list]
     return render_template("home.html", dances=dances, username=session.get("username"))
+
+
+@app.route("/logout")
+def logout():
+    del session["username"]
+    return redirect(url_for("home"))
 
 
 @app.route("/increment/", methods=["GET"])

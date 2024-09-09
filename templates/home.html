@@ -8,7 +8,7 @@
 </head>
 
 <body class="bg-gray-50 p-6">
-    <div class="max-w-lg mx-auto">
+    <div class="max-w-2xl mx-auto">
       <div id="header" class="mb-6">
         <h1 class="text-3xl font-bold mb-4 text-gray-800">
             Track your line-dance progress!
@@ -17,6 +17,12 @@
             <label for="username" class="font-semibold text-lg">Username:</label>
             <input type="text" name="username" class="border border-gray-300 p-2 rounded-lg">
             <input type="submit" value="Log in" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+
+            {% if username is not none %}
+            <a href="/logout" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                Log out
+            </a>
+            {% endif %}
         </form>
         <p class="text-gray-700">
             {% if username is not none %}
@@ -35,8 +41,8 @@
             <thead class="bg-gray-200">
                 <tr>
                     <th class="px-4 py-2 text-left">Name</th>
-                    <th class="px-4 py-2 text-left">Status</th>
                     {% if username is not none %}
+                    <th class="px-4 py-2 text-left">Status</th>
                     <th class="px-4 py-2 text-left">Increment Status</th>
                     {% endif %}
                 </tr>
@@ -46,6 +52,7 @@
                 {% for dance in dances %}
                 <tr class="{% if loop.index is even %}bg-gray-100{% else %}bg-white{% endif %}">
                     <td class="border px-4 py-2"><a href="{{ dance.url }}" target="_blank" class="text-blue-600 hover:underline">{{ dance.name }}</a></td>
+                    {% if username is not none %}
                     <td class="border px-4 py-2" style="background-color: 
                         {% if dance.status == 0 %}white
                         {% elif dance.status == 1 %}palegoldenrod
@@ -53,6 +60,7 @@
                         {% endif %};">
                         {{ dance.status }}
                     </td>
+                    {% endif %}
 
                     {% if username is not none %}
                     <td class="border px-4 py-2"><a href="/increment?id={{ dance.id }}" class="text-green-600 hover:underline">+++++++++</a></td>
