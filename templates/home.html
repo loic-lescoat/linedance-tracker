@@ -1,62 +1,67 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Linedance-tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <header>
-    <h1>
-    Track your line-dance progress!
-    </h1>
-    <form method="post">
-      <b><label for="username">Username:</label></b>
-      <input type="text" name="username">
-      <input type="submit" value="Log in">
-    </form>
-    <p>
-      {% if username is not none %}
-      Logged in as <b>{{ username }}</b>
-      {% else %}
-      Not logged in
-      {% endif %}
-    </p>
-    <p>Playlist: <a href="https://open.spotify.com/playlist/1RIoKlZsye0xW3ZVpi8cQ9?si=udPkksVjS7GQZ8Mypkn99g&pi=u-sQQRpjjFSVST&nd=1&dlsi=7e3eadc61cdf4df0">Spotify</a> and <a href="https://listen.tidal.com/playlist/3b4d9529-f9e4-4e9f-9479-e25cc9239de2">Tidal</a>
-    </p>
-  </header>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Status</th>
-        {% if username is not none %}
-        <th>Increment Status</th>
-        {% endif %}
-      </tr>
-    </thead>
+<body class="bg-gray-50 p-6">
+    <div class="max-w-lg mx-auto">
+      <div id="header" class="mb-6">
+        <h1 class="text-3xl font-bold mb-4 text-gray-800">
+            Track your line-dance progress!
+        </h1>
+        <form method="post" class="flex items-center space-x-4 mb-4">
+            <label for="username" class="font-semibold text-lg">Username:</label>
+            <input type="text" name="username" class="border border-gray-300 p-2 rounded-lg">
+            <input type="submit" value="Log in" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+        </form>
+        <p class="text-gray-700">
+            {% if username is not none %}
+            Logged in as <b>{{ username }}</b>
+            {% else %}
+            Not logged in
+            {% endif %}
+        </p>
+        <p class="mt-2">
+            Playlist: <a href="https://open.spotify.com/playlist/1RIoKlZsye0xW3ZVpi8cQ9?si=udPkksVjS7GQZ8Mypkn99g&pi=u-sQQRpjjFSVST&nd=1&dlsi=7e3eadc61cdf4df0"
+                class="text-blue-600 hover:underline">Spotify</a> and <a href="https://listen.tidal.com/playlist/3b4d9529-f9e4-4e9f-9479-e25cc9239de2"
+                class="text-blue-600 hover:underline">Tidal</a>
+        </p>
+      </div>
+        <table class="table-auto w-full bg-white border border-gray-200 rounded-lg">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="px-4 py-2 text-left">Name</th>
+                    <th class="px-4 py-2 text-left">Status</th>
+                    {% if username is not none %}
+                    <th class="px-4 py-2 text-left">Increment Status</th>
+                    {% endif %}
+                </tr>
+            </thead>
 
-    <tbody>
-      {% for dance in dances %}
-      <tr>
-        <td><a href="{{ dance.url }}" target="_blank">{{ dance.name }}</a></td>
-        
-        <td style="background-color: 
-            {% if dance.status == 0 %}white
-            {% elif dance.status == 1 %}palegoldenrod
-            {% elif dance.status == 2 %}palegreen
-            {% endif %};">
-            {{ dance.status }}
-        </td>
+            <tbody>
+                {% for dance in dances %}
+                <tr class="{% if loop.index is even %}bg-gray-100{% else %}bg-white{% endif %}">
+                    <td class="border px-4 py-2"><a href="{{ dance.url }}" target="_blank" class="text-blue-600 hover:underline">{{ dance.name }}</a></td>
+                    <td class="border px-4 py-2" style="background-color: 
+                        {% if dance.status == 0 %}white
+                        {% elif dance.status == 1 %}palegoldenrod
+                        {% elif dance.status == 2 %}palegreen
+                        {% endif %};">
+                        {{ dance.status }}
+                    </td>
 
-        {% if username is not none %}
-        <td><a href="/increment?id={{ dance.id }}">+++++++++</a></td>
-        {% endif %}
-      </tr>
-      {% endfor %}
-
-    </tbody>
-  </table>
+                    {% if username is not none %}
+                    <td class="border px-4 py-2"><a href="/increment?id={{ dance.id }}" class="text-green-600 hover:underline">+++++++++</a></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
+
 </html>
