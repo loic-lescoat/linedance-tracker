@@ -57,7 +57,7 @@ for i, vid in enumerate(videos[0]["entries"]):
     title = vid["title"]
     if not title.startswith("Learn"):
         continue
-    title = title.lstrip("Learn ").split(" in")[0]
+    title = title.removeprefix("Learn ").split(" in")[0].strip('"')
     url = vid["url"]
     cur.execute("insert into dances values (?, ?, ?)", (i, title, url))
 conn.commit()
