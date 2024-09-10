@@ -7,8 +7,8 @@ RUN python3 -m pip install -r requirements.txt
 
 ENV STORAGE_DIR=storage
 RUN mkdir storage
-COPY scrape.py .
-RUN python3 scrape.py
+
+# need to copy dance-progress into storage dir
 
 COPY app.py .
 COPY templates/*.html templates/

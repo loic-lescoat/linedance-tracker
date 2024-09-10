@@ -3,7 +3,7 @@ PORT := 8001
 VOLUME_NAME = $(CONTAINER_NAME)-volume
 
 build:
-	docker build --build-arg PORT=$(PORT) -t $(CONTAINER_NAME) .
+	docker build $(ARGS) --build-arg PORT=$(PORT) -t $(CONTAINER_NAME) .
 run:
 	docker run -d -p $(PORT):$(PORT) -v $(VOLUME_NAME):/deploy/storage $(CONTAINER_NAME)
 
@@ -15,7 +15,3 @@ kill:
 	sleep 1 # may get "port already allocated" error without this
 	$(MAKE) build
 	$(MAKE) run
-
-	
-
-

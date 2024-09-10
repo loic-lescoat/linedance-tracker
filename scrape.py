@@ -1,6 +1,5 @@
 import sqlite3
 import yt_dlp
-import sys
 import os
 
 STORAGE_DIR = os.environ["STORAGE_DIR"]
@@ -8,30 +7,14 @@ STORAGE_DIR = os.environ["STORAGE_DIR"]
 conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
 cur = conn.cursor()
 
-if len(sys.argv) > 1 and sys.argv[1] == "--delete":
-    cur.execute(
-        """
-        drop table dance_progress
-        """
-    )
-    cur.execute(
-        """
-        drop table users
-        """
-    )
-    conn.commit()
-    del cur
-
-
-cur = conn.cursor()
 cur.execute(
     """
-    create table dances (id int, name varchar, url varchar)
+    create table if not exists dances (id int, name varchar, url varchar)
     """
 )
 cur.execute(
     """
-    create table progress (username varchar, id int, status int)
+    create table if not exists progress (username varchar, id int, status int)
     """
 )
 
@@ -49,9 +32,6 @@ ydl_opts = {
 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
     info_dict = ydl.extract_info(channel_url, download=False)
     videos = info_dict["entries"]
-
-
-cur = conn.cursor()
 
 for i, vid in enumerate(videos[0]["entries"]):
     title = vid["title"]
