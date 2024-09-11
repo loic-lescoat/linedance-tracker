@@ -25,17 +25,18 @@ app.secret_key = (
 @app.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "POST":
-        if request.form["username"]:
-            session["username"] = request.form["username"]
+        username = request.form["username"].lower()
+        if username:
+            session["username"] = username
         return redirect(url_for("home"))
     conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
     cur = conn.cursor()
-    username = session.get("username")
-    user_filter = (
-        f"""and progress.username = '{username}'"""
-        if username is not None
-        else "and 1 = 2"  # return no progress if not logged in
-    )
+    if "username" in session:
+        username = session["username"]
+        user_filter = f"""and progress.username = '{username}'"""
+    else:
+        username = None
+        user_filter = "and 1 = 2"  # return no progress if not logged in
     dances_list = cur.execute(
         f"""with t0 as (
     select dances.id, dances.name, dances.url, progress.status
@@ -50,7 +51,7 @@ order by status desc, name asc"""
     ).fetchall()
     conn.close()
     dances = [dance(*x) for x in dances_list]
-    return render_template("home.html", dances=dances, username=session.get("username"))
+    return render_template("home.html", dances=dances, username=username)
 
 
 @app.route("/logout")
