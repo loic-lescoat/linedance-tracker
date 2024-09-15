@@ -14,9 +14,17 @@ cur.execute(
     create table dances (id int, name varchar, keywords varchar, url varchar)
     """
 )
+# row present iff username has status on id; else if absent, status is 0
 cur.execute(
     """
     create table progress (username varchar, id int, status int)
+    """
+)
+
+# row says if username interested in id; else if absent, not interested
+cur.execute(
+    """
+    create table interest (username varchar, id int, interest int)
     """
 )
 

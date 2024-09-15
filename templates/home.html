@@ -8,7 +8,7 @@
 </head>
 
 <body class="bg-gray-50 p-6">
-    <div class="max-w-2xl mx-auto">
+    <div class="max-w-3xl mx-auto">
       <div id="header" class="mb-6">
         <h1 class="text-3xl font-bold mb-4 text-gray-800">
             Track your line-dance progress!
@@ -45,6 +45,7 @@
                     {% if username is not none %}
                     <th class="px-4 py-2 text-left">Status</th>
                     <th class="px-4 py-2 text-left">Increment Status</th>
+                    <th class="px-4 py-2 text-left">Interest</th>
                     {% endif %}
                 </tr>
             </thead>
@@ -55,17 +56,21 @@
                     <td class="border px-4 py-2"><a href="{{ dance.url }}" target="_blank" class="text-blue-600 hover:underline">{{ dance.name }}</a></td>
                     <td class="border px-4 py-2">{{ dance.keywords }}</td>
                     {% if username is not none %}
-                    <td class="border px-4 py-2" style="background-color: 
-                        {% if dance.status == 0 %}white
+                    <td class="border px-4 py-2 text-center" style="background-color: 
+                        {% if dance.status == 0 %}{% if loop.index is even %}bg-gray-100{% else %}bg-white{% endif %}
                         {% elif dance.status == 1 %}palegoldenrod
                         {% elif dance.status == 2 %}palegreen
                         {% endif %};">
                         {{ dance.status }}
                     </td>
-                    {% endif %}
-
-                    {% if username is not none %}
-                    <td class="border px-4 py-2"><a href="/increment?id={{ dance.id }}" class="text-green-600 hover:underline">+++++++++</a></td>
+                    <td class="border px-4 py-2 text-center"><a href="/increment?id={{ dance.id }}" class="text-green-600 hover:underline">+++++++++</a></td>
+                    <td class="border px-4 py-2 text-center">
+<a href="/toggle_interest?id={{ dance.id }}" class="text-green-600 hover:underline">
+                        {% if dance.interest == 1%}⭐
+                        {% else %}~
+                        {% endif %}
+</a>
+                       </td>
                     {% endif %}
                 </tr>
                 {% endfor %}
