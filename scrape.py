@@ -1,20 +1,22 @@
 import sqlite3
 import yt_dlp
 import os
+import re
 
 STORAGE_DIR = os.environ["STORAGE_DIR"]
+KEYWORDS_PATTERN = r"\[.+\]"
 
 conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
 cur = conn.cursor()
 
 cur.execute(
     """
-    create table if not exists dances (id int, name varchar, url varchar)
+    create table dances (id int, name varchar, keywords varchar, url varchar)
     """
 )
 cur.execute(
     """
-    create table if not exists progress (username varchar, id int, status int)
+    create table progress (username varchar, id int, status int)
     """
 )
 
@@ -34,11 +36,19 @@ with yt_dlp.YoutubeDL(ydl_opts) as ydl:
     videos = info_dict["entries"]
 
 for i, vid in enumerate(videos[0]["entries"]):
-    title = vid["title"]
-    if not title.startswith("Learn"):
+    original_title = vid["title"]
+    if not original_title.startswith("Learn"):  # remove vlogs etc
         continue
-    title = title.removeprefix("Learn ").split(" in")[0].strip('"')
+    title = original_title.removeprefix("Learn ").split(" in")[0].strip('"')
+    keyword_matches = re.search(KEYWORDS_PATTERN, original_title)
+    if keyword_matches is not None:
+        keywords = keyword_matches.group(0).strip("[]")
+    else:
+        keywords = ""
     url = vid["url"]
-    cur.execute("insert into dances values (?, ?, ?)", (i, title, url))
+    cur.execute(
+        "insert into dances (id, name, keywords, url) values (?, ?, ?, ?)",
+        (i, title, keywords, url),
+    )
 conn.commit()
 conn.close()
