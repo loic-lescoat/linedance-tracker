@@ -12,7 +12,7 @@ import os
 import sqlite3
 
 
-dance = namedtuple("dance", ["id", "name", "url", "status"])
+dance = namedtuple("dance", ["id", "name", "keywords", "url", "status"])
 
 STORAGE_DIR = os.environ["STORAGE_DIR"]
 
@@ -39,7 +39,7 @@ def home():
         user_filter = "and 1 = 2"  # return no progress if not logged in
     dances_list = cur.execute(
         f"""with t0 as (
-    select dances.id, dances.name, dances.url, progress.status
+    select dances.id, dances.name, dances.keywords, dances.url, progress.status
     from dances
     left join progress
     on dances.id = progress.id

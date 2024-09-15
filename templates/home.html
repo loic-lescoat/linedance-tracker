@@ -41,6 +41,7 @@
             <thead class="bg-gray-200">
                 <tr>
                     <th class="px-4 py-2 text-left">Name</th>
+                    <th class="px-4 py-2 text-left">Keywords</th>
                     {% if username is not none %}
                     <th class="px-4 py-2 text-left">Status</th>
                     <th class="px-4 py-2 text-left">Increment Status</th>
@@ -52,6 +53,7 @@
                 {% for dance in dances %}
                 <tr class="{% if loop.index is even %}bg-gray-100{% else %}bg-white{% endif %}">
                     <td class="border px-4 py-2"><a href="{{ dance.url }}" target="_blank" class="text-blue-600 hover:underline">{{ dance.name }}</a></td>
+                    <td class="border px-4 py-2">{{ dance.keywords }}</td>
                     {% if username is not none %}
                     <td class="border px-4 py-2" style="background-color: 
                         {% if dance.status == 0 %}white
