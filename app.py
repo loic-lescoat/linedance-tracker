@@ -39,13 +39,13 @@ def home():
         user_filter = "and 1 = 2"  # return no progress if not logged in
     dances_list = cur.execute(
         f"""with t0 as (
-    select id, name, keywords, url, case when status is null then 0 else status end
+    select dances.id, dances.name, dances.keywords, dances.url, progress.status
     from dances
     left join progress
     on dances.id = progress.id
     {user_filter}
 )
-select id, name, url, case when status is null then 0 else status end
+select id, name, keywords, url, case when status is null then 0 else status end
 from t0
 order by status desc, name asc"""
     ).fetchall()
