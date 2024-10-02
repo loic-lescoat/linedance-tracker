@@ -1,5 +1,6 @@
 from flask import (
     Flask,
+    Blueprint,
     request,
     render_template,
     url_for,
@@ -20,15 +21,16 @@ app = Flask(__name__)
 app.secret_key = (
     "my super secret keyhwuqbwefjhcuapjebqawihw"  # TODO move this somewhere else
 )
+bp = Blueprint("linedance-tracker", __name__, url_prefix="/linedance-tracker")
 
 
-@app.route("/", methods=["GET", "POST"])
+@bp.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "POST":
         username = request.form["username"].lower()
         if username:
             session["username"] = username
-        return redirect(url_for("home"))
+        return redirect(url_for("linedance-tracker.home"))
     conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
     cur = conn.cursor()
     if "username" in session:
@@ -67,13 +69,13 @@ order by interest desc, status desc, name asc
     return render_template("home.html", dances=dances, username=username)
 
 
-@app.route("/logout")
+@bp.route("/logout")
 def logout():
     del session["username"]
-    return redirect(url_for("home"))
+    return redirect(url_for("linedance-tracker.home"))
 
 
-@app.route("/toggle_interest", methods=["GET"])
+@bp.route("/toggle_interest", methods=["GET"])
 def toggle_interest():
     id = int(request.args["id"])
     conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
@@ -96,10 +98,10 @@ def toggle_interest():
     cur.execute(query)
     conn.commit()
     conn.close()
-    return redirect(url_for("home"))
+    return redirect(url_for("linedance-tracker.home"))
 
 
-@app.route("/increment/", methods=["GET"])
+@bp.route("/increment/", methods=["GET"])
 def set_status():
     id = int(request.args["id"])
     conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
@@ -122,4 +124,12 @@ def set_status():
     cur.execute(query)
     conn.commit()
     conn.close()
-    return redirect(url_for("home"))
+    return redirect(url_for("linedance-tracker.home"))
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return "404 error", 404
+
+
+app.register_blueprint(bp)
