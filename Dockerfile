@@ -19,4 +19,5 @@ ENV PORT=${PORT}
 
 EXPOSE $PORT
 
-CMD flask --app app run -h 0.0.0.0 -p $PORT
+CMD gunicorn -w 1 app:app -b localhost:$PORT
+# CMD flask --app app run -h 0.0.0.0 -p $PORT
