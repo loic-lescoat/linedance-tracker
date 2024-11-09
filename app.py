@@ -116,7 +116,7 @@ def set_status():
                     insert into progress (username, id, status) values ('{username}', {id}, {new_status})
                     """
     else:
-        new_status = (status_tuple[0] + 1) % 3
+        new_status = (status_tuple[0] + 1) % 2
         query = f"""
                     update progress set status = {new_status}
                     where username = '{username}' and id = '{id}'
