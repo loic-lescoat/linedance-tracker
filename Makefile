@@ -5,7 +5,7 @@ VOLUME_NAME = $(CONTAINER_NAME)-volume
 build:
 	docker build $(ARGS) --build-arg PORT=$(PORT) -t $(CONTAINER_NAME) .
 	# TODO don't hardcode storage dir
-	docker run -v $(VOLUME_NAME):/deploy/storage -t $(CONTAINER_NAME) python3 scrape.py
+	docker run -v $(VOLUME_NAME):/deploy/storage -t $(CONTAINER_NAME) python3 scrape.py || echo "Not setting up database: already exists"
 run:
 	docker run -d -p $(PORT):$(PORT) -v $(VOLUME_NAME):/deploy/storage -t $(CONTAINER_NAME)
 
