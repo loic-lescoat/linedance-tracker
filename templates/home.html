@@ -11,7 +11,7 @@
     <div class="max-w-3xl mx-auto">
       <div id="header" class="mb-6">
         <h1 class="text-3xl font-bold mb-4 text-gray-800">
-            Track your line-dance progress!
+            Create a username to track your line-dance progress!
         </h1>
         <form method="post" class="flex items-center space-x-4 mb-4">
             <label for="username" class="font-semibold text-lg">Username:</label>
@@ -40,11 +40,10 @@
         <table class="table-auto w-full bg-white border border-gray-200 rounded-lg">
             <thead class="bg-gray-200">
                 <tr>
-                    <th class="px-4 py-2 text-left">Dance Name</th>
+                    <th class="px-4 py-2 text-left">Tutorial Link</th>
                     <th class="px-4 py-2 text-left">Keywords</th>
                     {% if username is not none %}
                     <th class="px-4 py-2 text-left">Learned?</th>
-                    <th class="px-4 py-2 text-left">Toggle Status</th>
                     <th class="px-4 py-2 text-left">Interested?</th>
                     {% endif %}
                 </tr>
@@ -59,15 +58,16 @@
                     <td class="border px-4 py-2 text-center" style="background-color: 
                         {% if loop.index is even %}bg-gray-100{% else %}bg-white{% endif %}
                         ">
-			{% if dance.status != 0 %}✅
-			{% else %}-
-			{% endif %}
+                      <a href="{{ url_for('linedance-tracker.set_status', id=dance.id) }}" class="text-{% if dance.status != 0 %}green{% else %}red{% endif %}-600 hover:underline">
+                        {% if dance.status != 0 %}✅Yes
+                        {% else %}❌No
+                        {% endif %}
+                      </a>
                     </td>
-		    <td class="border px-4 py-2 text-center"><a href="{{ url_for('linedance-tracker.set_status', id=dance.id) }}" class="text-green-600 hover:underline">++++++</a></td>
                     <td class="border px-4 py-2 text-center">
-			    <a href=" {{ url_for('linedance-tracker.toggle_interest', id=dance.id) }}" class="text-green-600 hover:underline">
-                        {% if dance.interest == 1%}⭐
-                        {% else %}~
+			    <a href=" {{ url_for('linedance-tracker.toggle_interest', id=dance.id) }}" class="text-{% if dance.interest == 1 %}yellow{% else %}black{% endif %}-600 hover:underline">
+                        {% if dance.interest == 1 %}⭐Yes
+                        {% else %}⚫No
                         {% endif %}
 </a>
                        </td>
