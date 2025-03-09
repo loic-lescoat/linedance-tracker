@@ -33,22 +33,20 @@ def home():
         return redirect(url_for("linedance-tracker.home"))
     conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
     cur = conn.cursor()
-    if "username" in session:
-        username = session["username"]
-        user_filter = f"""and progress.username = '{username}'"""
-    else:
-        username = None
-        user_filter = "and 1 = 2"  # return no progress if not logged in
+    username = session.get("username")
+    params = {
+        "username": username,
+    }
     dances_list = cur.execute(
-        f"""
+        """
 with t1 as (
     with t0 as (
         select dances.id, dances.name, dances.keywords, dances.url, progress.status
-        , '{username}' as username
+        , :username as username
         from dances
         left join progress
         on dances.id = progress.id
-        {user_filter}
+        and progress.username = :username
     )
     select id, name, keywords, url, username,
     case when status is null then 0 else status end as status
@@ -61,11 +59,11 @@ left join interest
 on t1.id = interest.id
 and t1.username = interest.username
 order by interest desc, status desc, name asc
-"""
+""",
+        params,
     ).fetchall()
     conn.close()
     dances = [dance(*x) for x in dances_list]
-    # dances = [dance(*(list(x)+[0])) for x in dances_list]
     return render_template("home.html", dances=dances, username=username)
 
 
@@ -77,25 +75,31 @@ def logout():
 
 @bp.route("/toggle_interest", methods=["GET"])
 def toggle_interest():
-    id = int(request.args["id"])
+    id_n = int(request.args["id"])
     conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
     cur = conn.cursor()
     username = session["username"]
     interest_tuple = cur.execute(
-        "select interest from interest where id = ? and username = ?", (id, username)
+        "select interest from interest where id = ? and username = ?", (id_n, username)
     ).fetchone()
     if interest_tuple is None:
-        query = f"""
-                    insert into interest (username, id, interest) values ('{username}', {id}, 1)
+        query = """
+                    insert into interest (username, id, interest) values (:username, :id, 1)
                     """
+        new_interest = -1  # unused
     else:
         current_interest = interest_tuple[0]
         new_interest = 1 - current_interest
-        query = f"""
-                    update interest set interest = {new_interest}
-                    where username = '{username}' and id = '{id}'
+        query = """
+                    update interest set interest = :new_interest
+                    where username = :username and id = :id
                     """
-    cur.execute(query)
+    params = {
+        "username": username,
+        "id": id_n,
+        "new_interest": new_interest,
+    }
+    cur.execute(query, params)
     conn.commit()
     conn.close()
     return redirect(url_for("linedance-tracker.home"))
@@ -103,25 +107,30 @@ def toggle_interest():
 
 @bp.route("/increment/", methods=["GET"])
 def set_status():
-    id = int(request.args["id"])
+    id_n = int(request.args["id"])
     conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
     cur = conn.cursor()
     username = session["username"]
     status_tuple = cur.execute(
-        "select status from progress where id = ? and username = ?", (id, username)
+        "select status from progress where id = ? and username = ?", (id_n, username)
     ).fetchone()
     if status_tuple is None:
         new_status = 1
-        query = f"""
-                    insert into progress (username, id, status) values ('{username}', {id}, {new_status})
+        query = """
+                    insert into progress (username, id, status) values (:username, :id, :new_status)
                     """
     else:
         new_status = (status_tuple[0] + 1) % 2
-        query = f"""
-                    update progress set status = {new_status}
-                    where username = '{username}' and id = '{id}'
+        query = """
+                    update progress set status = :new_status
+                    where username = :username and id = :id
                     """
-    cur.execute(query)
+    params = {
+        "new_status": new_status,
+        "username": username,
+        "id": id_n,
+    }
+    cur.execute(query, params)
     conn.commit()
     conn.close()
     return redirect(url_for("linedance-tracker.home"))
