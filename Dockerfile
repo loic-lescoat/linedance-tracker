@@ -20,5 +20,6 @@ ENV PORT=${PORT}
 EXPOSE $PORT
 
 COPY scrape.py .
+COPY update.py .
 
 CMD gunicorn -w 1 app:app -b linedance-tracker:$PORT
