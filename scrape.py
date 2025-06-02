@@ -1,6 +1,7 @@
 """
 Create and populate database
 """
+
 import os
 import re
 import sqlite3
@@ -87,22 +88,30 @@ def in_db(url: str, cur: sqlite3.Cursor) -> bool:
     return result
 
 
-def update(vid_raw: Dict[str, Any], cur: sqlite3.Cursor) -> None:
+def update(vid_raw: Dict[str, Any], cur: sqlite3.Cursor) -> bool:
     """
     If not in db: add to db
+
+    Returns
+    -------
+    True iff added the video
     """
     url = vid_raw["url"]
-    if not in_db(url, cur):
+    added = not in_db(url, cur)
+    if added:
         new_id = cur.execute("select max(id) from dances").fetchone()[0] + 1
         cur.execute(
             "insert into dances (id, name, keywords, url) values (?, ?, ?, ?)",
             (new_id, *extract_info(vid_raw)),
         )
+    return added
 
 
-def update_all(cur: sqlite3.Cursor, vids_raw: List[Dict[str, Any]]):
+def update_all(cur: sqlite3.Cursor, vids_raw: List[Dict[str, Any]]) -> int:
+    n_updated = 0
     for x in vids_raw:
-        update(x, cur)
+        n_updated += update(x, cur)
+    return n_updated
 
 
 if __name__ == "__main__":

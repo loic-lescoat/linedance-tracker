@@ -9,7 +9,7 @@ conn = sqlite3.Connection("storage/dance-progress.db")
 cur = conn.cursor()
 
 vids_raw = get_tutorial_videos(CHANNEL_URL)
-update_all(cur, vids_raw)
-
+n_updated = update_all(cur, vids_raw)
 conn.commit()
 conn.close()
+print(f"Updated {n_updated} videos")
