@@ -7,6 +7,8 @@ from flask import (
     redirect,
     session,
 )
+
+
 from collections import namedtuple
 import os
 
@@ -22,6 +24,16 @@ app.secret_key = (
     "my super secret keyhwuqbwefjhcuapjebqawihw"  # TODO move this somewhere else
 )
 bp = Blueprint("linedance-tracker", __name__, url_prefix="/linedance-tracker")
+
+
+def plural(x: str, n: int) -> str:
+    """
+    Returns plural? form of x
+    """
+    return x if n == 1 else x + "s"
+
+
+app.jinja_env.filters["plural"] = plural
 
 
 @bp.route("/", methods=["GET", "POST"])
