@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <title>Linedance-tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ url_for('static', filename='home.js') }}"></script>
 </head>
 
 <body class="bg-gray-50 p-6">
@@ -70,19 +71,11 @@
                         {% if loop.index is even %}bg-gray-100{% else %}bg-white{% endif %}
                         ">
                       {% set learned_status_color = 'green' if dance.status != 0 else 'red' %}
-                      <a href="{{ url_for('linedance-tracker.set_status', id=dance.id) }}" class="text-{{ learned_status_color }}-600 hover:underline">
-                        {% if dance.status != 0 %}✅Yes
-                        {% else %}❌No
-                        {% endif %}
-                      </a>
+                      <input type="checkbox" onchange="toggleChanged(this)" {% if dance.status != 0 %}checked{% endif %} data-action-url="{{ url_for('linedance-tracker.set_status', id=dance.id) }}">
                     </td>
                     {% set interest_status_color = 'yellow' if dance.interest == 1 else 'black' %}
                     <td class="border px-4 py-2 text-center">
-                      <a href=" {{ url_for('linedance-tracker.toggle_interest', id=dance.id) }}" class="text-{{ interest_status_color }}-600 hover:underline">
-                        {% if dance.interest == 1 %}⭐Yes
-                        {% else %}⚫No
-                        {% endif %}
-                      </a>
+                      <input type="checkbox" onchange="toggleChanged(this)" {% if dance.interest == 1 %}checked{% endif %} data-action-url="{{ url_for('linedance-tracker.toggle_interest', id=dance.id) }}">
                        </td>
                     {% endif %}
                 </tr>
