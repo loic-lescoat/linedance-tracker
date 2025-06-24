@@ -12,6 +12,7 @@ RUN mkdir storage
 
 COPY app.py .
 COPY templates/*.html templates/
+COPY static/ static/
 
 
 ARG PORT
