@@ -36,9 +36,11 @@ def plural(x: str, n: int) -> str:
 
 app.jinja_env.filters["plural"] = plural
 
+
 @bp.route("/static/<filename>")
 def static(filename: str):
     return send_from_directory("static", filename)
+
 
 @bp.route("/", methods=["GET", "POST"])
 def home():
