@@ -10,10 +10,10 @@
     <script src="{{ url_for('linedance-tracker.static', filename='home.js') }}"></script>
 </head>
 
-<body class="bg-gray-50 p-6">
-    <div class="max-w-3xl mx-auto">
+<body class="bg-gray-50 p-6 text-4xl 2xl:text-base">
+    <div class="2xl:max-w-3xl mx-auto">
       <div id="header" class="mb-6">
-        <h1 class="text-2xl font-bold mb-4 text-gray-800">
+        <h1 class="2xl:text-2xl font-bold mb-4 text-gray-800">
             {% if username is none %}
               Create a username to track your line-dance progress!
             {% elif n_learned == 0 and n_interested == 0 %}
@@ -22,13 +22,14 @@
             <!-- nothing -->
             {% endif %}
         </h1>
-        <form method="post" class="flex items-center space-x-4 mb-4">
-            <label for="username" class="font-semibold text-lg">Username:</label>
-            <input type="text" name="username" class="border border-gray-300 p-2 rounded-lg">
+          <form method="post" class="flex items-center space-x-4 mb-4 flex-wrap">
+
+            <label for="username" class="font-semibold">Username:</label>
+            <input type="text" name="username" class="border border-gray-300 p-2 rounded-lg max-w-xs">
             <input type="submit" value="{% if username is none %}Log in{% else %}Switch user{% endif %}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
 
             {% if username is not none %}
-	    <a href="{{ url_for('linedance-tracker.logout') }}" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+	    <a href="{{ url_for('linedance-tracker.logout') }}" class="bg-red-500 text-center text-white px-4 py-2 rounded-lg hover:bg-red-600">
                 Log out
             </a>
             {% endif %}
@@ -49,39 +50,41 @@
                 class="text-blue-600 hover:underline">Tidal</a>
         </p>
       </div>
-        <table class="table-auto w-full bg-white border border-gray-200 rounded-lg">
-            <thead class="bg-gray-200">
-                <tr>
-                    <th class="px-4 py-2 text-left">Tutorial Link</th>
-                    <th class="px-4 py-2 text-left">Keywords</th>
-                    {% if username is not none %}
-                    <th class="px-4 py-2 text-left">Learned?</th>
-                    <th class="px-4 py-2 text-left">Interested?</th>
-                    {% endif %}
-                </tr>
-            </thead>
+        <div class="overflow-x-auto">
+          <table class="table-fixed w-full bg-white border border-gray-200 rounded-lg">
+              <thead class="bg-gray-200">
+                  <tr>
+                      <th class="px-2 py-2 text-left">Tutorial Link</th>
+                      <th class="px-2 py-2 text-left">Keywords</th>
+                      {% if username is not none %}
+                      <th class="px-2 py-2 text-center">Learned?</th>
+                      <th class="px-2 py-2 text-center">Interested?</th>
+                      {% endif %}
+                  </tr>
+              </thead>
 
-            <tbody>
-                {% for dance in dances %}
-                <tr class="{% if loop.index is even %}bg-gray-100{% else %}bg-white{% endif %}">
-                    <td class="border px-4 py-2"><a href="{{ dance.url }}" target="_blank" class="text-blue-600 hover:underline">{{ dance.name }}</a></td>
-                    <td class="border px-4 py-2">{{ dance.keywords }}</td>
-                    {% if username is not none %}
-                    <td class="border px-4 py-2 text-center" style="background-color: 
-                        {% if loop.index is even %}bg-gray-100{% else %}bg-white{% endif %}
-                        ">
-                      {% set learned_status_color = 'green' if dance.status != 0 else 'red' %}
-                      <input type="checkbox" onchange="toggleChanged(this)" {% if dance.status != 0 %}checked{% endif %} data-action-url="{{ url_for('linedance-tracker.set_status', id=dance.id) }}">
-                    </td>
-                    {% set interest_status_color = 'yellow' if dance.interest == 1 else 'black' %}
-                    <td class="border px-4 py-2 text-center">
-                      <input type="checkbox" onchange="toggleChanged(this)" {% if dance.interest == 1 %}checked{% endif %} data-action-url="{{ url_for('linedance-tracker.toggle_interest', id=dance.id) }}">
-                       </td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+              <tbody>
+                  {% for dance in dances %}
+                  <tr class="{% if loop.index is even %}bg-gray-100{% else %}bg-white{% endif %}">
+                      <td class="border px-4 py-2"><a href="{{ dance.url }}" target="_blank" class="text-blue-600 hover:underline">{{ dance.name }}</a></td>
+                      <td class="border px-4 py-2">{{ dance.keywords }}</td>
+                      {% if username is not none %}
+                      <td class="border px-4 py-2 text-center" style="background-color: 
+                          {% if loop.index is even %}bg-gray-100{% else %}bg-white{% endif %}
+                          ">
+                        {% set learned_status_color = 'green' if dance.status != 0 else 'red' %}
+                        <input class="appearance-none w-12 h-12 2xl:w-6 2xl:h-6 border-2 border-blue-500 rounded-sm bg-white checked:bg-blue-500 checked:text-orange-500" type="checkbox" onchange="toggleChanged(this)" {% if dance.status != 0 %}checked{% endif %} data-action-url="{{ url_for('linedance-tracker.set_status', id=dance.id) }}">
+                      </td>
+                      {% set interest_status_color = 'yellow' if dance.interest == 1 else 'black' %}
+                      <td class="border px-4 py-2 text-center">
+                        <input class="appearance-none w-12 h-12 2xl:w-6 2xl:h-6 border-2 border-blue-500 rounded-sm bg-white checked:bg-blue-500 checked:text-orange-500" type="checkbox" onchange="toggleChanged(this)" {% if dance.interest == 1 %}checked{% endif %} data-action-url="{{ url_for('linedance-tracker.toggle_interest', id=dance.id) }}">
+                         </td>
+                      {% endif %}
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+        </div>
     </div>
 </body>
 
