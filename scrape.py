@@ -4,9 +4,9 @@ Create and populate database
 
 import os
 import re
-import sqlite3
 from typing import Any, Dict, List, Tuple
 
+import psycopg
 import yt_dlp
 
 STORAGE_DIR = os.environ["STORAGE_DIR"]
@@ -43,27 +43,6 @@ def get_tutorial_videos(channel_url: str) -> List[Dict[str, Any]]:
     return vids
 
 
-def create_tables(cur: sqlite3.Cursor) -> None:
-    cur.execute(
-        """
-        create table dances (id int, name varchar, keywords varchar, url varchar)
-        """
-    )
-    # row present iff username has status on id; else if absent, status is 0
-    cur.execute(
-        """
-        create table progress (username varchar, id int, status int)
-        """
-    )
-
-    # row says if username interested in id; else if absent, not interested
-    cur.execute(
-        """
-        create table interest (username varchar, id int, interest int)
-        """
-    )
-
-
 def extract_info(vid: Dict[str, Any]) -> Tuple[str, str, str]:
     """
     Extracts useful info
@@ -79,16 +58,16 @@ def extract_info(vid: Dict[str, Any]) -> Tuple[str, str, str]:
     return (title, keywords, url)
 
 
-def in_db(url: str, cur: sqlite3.Cursor) -> bool:
+def in_db(url: str, cur: psycopg.Cursor) -> bool:
     """
     Return True iff url is present in db
     """
-    match = cur.execute("select url from dances where url = ?", (url,)).fetchone()
+    match = cur.execute("select url from dances where url = %s", (url,)).fetchone()
     result = match is not None
     return result
 
 
-def update(vid_raw: Dict[str, Any], cur: sqlite3.Cursor) -> bool:
+def update(vid_raw: Dict[str, Any], cur: psycopg.Cursor) -> bool:
     """
     If not in db: add to db
 
@@ -99,15 +78,14 @@ def update(vid_raw: Dict[str, Any], cur: sqlite3.Cursor) -> bool:
     url = vid_raw["url"]
     added = not in_db(url, cur)
     if added:
-        new_id = cur.execute("select max(id) from dances").fetchone()[0] + 1
         cur.execute(
-            "insert into dances (id, name, keywords, url) values (?, ?, ?, ?)",
-            (new_id, *extract_info(vid_raw)),
+            "insert into dances (name, keywords, url) values (%s, %s, %s)",
+            *extract_info(vid_raw),
         )
     return added
 
 
-def update_all(cur: sqlite3.Cursor, vids_raw: List[Dict[str, Any]]) -> int:
+def update_all(cur: psycopg.Cursor, vids_raw: List[Dict[str, Any]]) -> int:
     n_updated = 0
     for x in vids_raw:
         n_updated += update(x, cur)
@@ -115,16 +93,17 @@ def update_all(cur: sqlite3.Cursor, vids_raw: List[Dict[str, Any]]) -> int:
 
 
 if __name__ == "__main__":
-    conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
-    cur = conn.cursor()
+    conn = psycopg.connect(
+        host=os.environ["POSTGRES_HOST"], user=os.environ["POSTGRES_USER"]
+    )
 
-    create_tables(cur)
+    cur = conn.cursor()
 
     vids_raw = get_tutorial_videos(CHANNEL_URL)
     for i, vid_raw in enumerate(vids_raw):
         cur.execute(
-            "insert into dances (id, name, keywords, url) values (?, ?, ?, ?)",
-            (i, *extract_info(vid_raw)),
+            "insert into dances (name, keywords, url) values (%s, %s, %s)",
+            *extract_info(vid_raw),
         )
     conn.commit()
     conn.close()

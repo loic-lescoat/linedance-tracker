@@ -13,7 +13,16 @@ from flask import (
 from collections import namedtuple
 import os
 
-import sqlite3
+import psycopg
+
+EXPECTED_KEYS = [
+    "PGPASSWORD",
+    "POSTGRES_HOST",
+    "POSTGRES_USER",
+]
+assert all([x in os.environ for x in EXPECTED_KEYS]), set(EXPECTED_KEYS) - set(
+    os.environ.keys()
+)
 
 
 dance = namedtuple("dance", ["id", "name", "keywords", "url", "status", "interest"])
@@ -49,7 +58,9 @@ def home():
         if username:
             session["username"] = username
         return redirect(url_for("linedance-tracker.home"))
-    conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
+    conn = psycopg.connect(
+        host=os.environ["POSTGRES_HOST"], user=os.environ["POSTGRES_USER"]
+    )
     cur = conn.cursor()
     username = session.get("username")
     params = {
@@ -60,11 +71,11 @@ def home():
 with t1 as (
     with t0 as (
         select dances.id, dances.name, dances.keywords, dances.url, progress.status
-        , :username as username
+        , %(username)s as username
         from dances
         left join progress
         on dances.id = progress.id
-        and progress.username = :username
+        and progress.username = %(username)s
     )
     select id, name, keywords, url, username,
     case when status is null then 0 else status end as status
@@ -94,23 +105,26 @@ def logout():
 @bp.route("/toggle_interest", methods=["GET"])
 def toggle_interest():
     id_n = int(request.args["id"])
-    conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
+    conn = psycopg.connect(
+        host=os.environ["POSTGRES_HOST"], user=os.environ["POSTGRES_USER"]
+    )
     cur = conn.cursor()
     username = session["username"]
     interest_tuple = cur.execute(
-        "select interest from interest where id = ? and username = ?", (id_n, username)
+        "select interest from interest where id = %s and username = %s",
+        (id_n, username),
     ).fetchone()
     if interest_tuple is None:
         query = """
-                    insert into interest (username, id, interest) values (:username, :id, 1)
+                    insert into interest (username, id, interest) values (%(username)s, %(id)s, 1)
                     """
         new_interest = -1  # unused
     else:
         current_interest = interest_tuple[0]
         new_interest = 1 - current_interest
         query = """
-                    update interest set interest = :new_interest
-                    where username = :username and id = :id
+                    update interest set interest = %(new_interest)s
+                    where username = %(username)s and id = %(id)s
                     """
     params = {
         "username": username,
@@ -126,22 +140,25 @@ def toggle_interest():
 @bp.route("/increment/", methods=["GET"])
 def set_status():
     id_n = int(request.args["id"])
-    conn = sqlite3.connect(os.path.join(STORAGE_DIR, "dance-progress.db"))
+    conn = psycopg.connect(
+        host=os.environ["POSTGRES_HOST"], user=os.environ["POSTGRES_USER"]
+    )
     cur = conn.cursor()
     username = session["username"]
     status_tuple = cur.execute(
-        "select status from progress where id = ? and username = ?", (id_n, username)
+        "select status from progress where id = %s and username = %s", (id_n, username)
     ).fetchone()
     if status_tuple is None:
         new_status = 1
         query = """
-                    insert into progress (username, id, status) values (:username, :id, :new_status)
+                    insert into progress (username, id, status)
+                    values (%(username)s, %(id)s, %(new_status)s)
                     """
     else:
         new_status = (status_tuple[0] + 1) % 2
         query = """
-                    update progress set status = :new_status
-                    where username = :username and id = :id
+                    update progress set status = %(new_status)s
+                    where username = %(username)s and id = %(id)s
                     """
     params = {
         "new_status": new_status,
