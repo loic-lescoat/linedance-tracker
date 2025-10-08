@@ -80,7 +80,7 @@ def update(vid_raw: Dict[str, Any], cur: psycopg.Cursor) -> bool:
     if added:
         cur.execute(
             "insert into dances (name, keywords, url) values (%s, %s, %s)",
-            *extract_info(vid_raw),
+            extract_info(vid_raw),
         )
     return added
 
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     for i, vid_raw in enumerate(vids_raw):
         cur.execute(
             "insert into dances (name, keywords, url) values (%s, %s, %s)",
-            *extract_info(vid_raw),
+            extract_info(vid_raw),
         )
     conn.commit()
     conn.close()
