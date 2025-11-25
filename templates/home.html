@@ -15,7 +15,7 @@
       <div id="header" class="mb-6">
         <h1 class="2xl:text-2xl font-bold mb-4 text-gray-800">
             {% if username is none %}
-              Create a username to track your line-dance progress!
+              Pick a username to track your line-dance progress!
             {% elif n_learned == 0 and n_interested == 0 %}
                 Click a Tutorial link below to start learning!
             {% else %}
@@ -24,9 +24,8 @@
         </h1>
           <form method="post" class="flex items-center space-x-4 mb-4 flex-wrap">
 
-            <label for="username" class="font-semibold">Username:</label>
-            <input type="text" name="username" class="border border-gray-300 p-2 rounded-lg max-w-xs">
-            <input type="submit" value="{% if username is none %}Log in{% else %}Switch user{% endif %}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+            <input type="text" name="username" class="border border-gray-300 p-2 rounded-lg flex-1 min-w-0" placeholder="Enter username">
+            <input type="submit" value="{% if username is none %}Create username or log in{% else %}Switch user{% endif %}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
 
             {% if username is not none %}
 	    <a href="{{ url_for('linedance-tracker.logout') }}" class="bg-red-500 text-center text-white px-4 py-2 rounded-lg hover:bg-red-600">
