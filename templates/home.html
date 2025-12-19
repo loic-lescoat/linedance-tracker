@@ -50,7 +50,7 @@
         </h1>
           <form method="post" class="flex items-center space-x-4 mb-4 flex-wrap">
 
-            <input type="text" name="username" class="border border-gray-300 p-2 rounded-lg flex-1 min-w-0" placeholder="Enter username">
+            <input type="text" name="username" class="border border-gray-300 p-2 rounded-lg flex-1 min-w-0" placeholder="Enter username" required>
             <input type="submit" value="{% if username is none %}Create username or log in{% else %}Switch user{% endif %}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
 
             {% if username is not none %}

@@ -56,8 +56,11 @@ def static(filename: str):
 def home():
     if request.method == "POST":
         username = request.form["username"].lower()
+        # only allow non-empty usernames
         if username:
             session["username"] = username
+        # redirect w/ GET so that reloading page never
+        # prompts user about re-submitting form
         return redirect(url_for("linedance-tracker.home"))
     conn = psycopg.connect(
         host=os.environ["POSTGRES_HOST"], user=os.environ["POSTGRES_USER"]
@@ -82,8 +85,9 @@ with t1 as (
     case when status is null then 0 else status end as status
     from t0
 )
-select t1.id, t1.name, t1.keywords, t1.url, t1.status
-,case when interest.interest is null then 0 else interest.interest end as interest
+select
+  t1.id, t1.name, t1.keywords, t1.url, t1.status
+  , case when interest.interest is null then 0 else interest.interest end as interest
 from t1
 left join interest
 on t1.id = interest.id
