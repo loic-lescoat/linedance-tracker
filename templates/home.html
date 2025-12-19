@@ -7,6 +7,32 @@
     <meta charset="UTF-8">
     <title>Linedance-tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
+<script>
+  // script for animating checkbox
+  tailwind.config = {
+    theme: {
+      extend: {
+        keyframes: {
+          checkBounce: {
+            '0%':   { transform: 'scale(0.8)' },
+            '50%':  { transform: 'scale(1.15)' },
+            '100%': { transform: 'scale(1)' },
+          },
+          checkMark: {
+            '0%':   { opacity: '0', transform: 'scale(0.5)' },
+            '30%':  { opacity: '1', transform: 'scale(1)' },
+            '62.5%':  { opacity: '1' },
+            '100%': { opacity: '0', transform: 'scale(0.8)' },
+          },
+        },
+        animation: {
+          check: 'checkBounce 0.25s ease-out',
+          checkmark: 'checkMark 0.4s ease-out forwards',
+        },
+      },
+    },
+  }
+</script>
     <script src="{{ url_for('linedance-tracker.static', filename='home.js') }}"></script>
 </head>
 
@@ -68,15 +94,59 @@
                       <td class="border px-4 py-2"><a href="{{ dance.url }}" target="_blank" class="text-blue-600 hover:underline">{{ dance.name }}</a></td>
                       <td class="border px-4 py-2">{{ dance.keywords }}</td>
                       {% if username is not none %}
-                      <td class="border px-4 py-2 text-center" style="background-color: 
-                          {% if loop.index is even %}bg-gray-100{% else %}bg-white{% endif %}
-                          ">
-                        {% set learned_status_color = 'green' if dance.status != 0 else 'red' %}
-                        <input class="appearance-none w-12 h-12 2xl:w-6 2xl:h-6 border-2 border-blue-500 rounded-sm bg-white checked:bg-blue-500 checked:text-orange-500" type="checkbox" onchange="toggleChanged(this)" {% if dance.status != 0 %}checked{% endif %} data-action-url="{{ url_for('linedance-tracker.set_status', id=dance.id) }}">
-                      </td>
-                      {% set interest_status_color = 'yellow' if dance.interest == 1 else 'black' %}
                       <td class="border px-4 py-2 text-center">
-                        <input class="appearance-none w-12 h-12 2xl:w-6 2xl:h-6 border-2 border-blue-500 rounded-sm bg-white checked:bg-blue-500 checked:text-orange-500" type="checkbox" onchange="toggleChanged(this)" {% if dance.interest == 1 %}checked{% endif %} data-action-url="{{ url_for('linedance-tracker.toggle_interest', id=dance.id) }}">
+                        <input
+                          type="checkbox"
+                          onchange="toggleChanged(this)"
+                          {% if dance.status != 0 %}checked{% endif %}
+                          data-action-url="{{ url_for('linedance-tracker.set_status', id=dance.id) }}"
+                          class="
+                            relative appearance-none
+                            w-12 h-12 2xl:w-6 2xl:h-6
+                            border-2 border-orange-500 rounded-sm
+                            bg-white
+                            transition-colors duration-200
+                            checked:bg-orange-500
+                            active:scale-95
+
+                            before:content-['✔']
+                            before:absolute
+                            before:inset-0
+                            before:flex
+                            before:items-center
+                            before:justify-center
+                            before:text-orange-500
+                            before:text-2xl 2xl:before:text-sm
+                            before:opacity-0
+                          "
+                        >
+                      </td>
+                      <td class="border px-4 py-2 text-center">
+                        <input
+                          type="checkbox"
+                          onchange="toggleChanged(this)"
+                          {% if dance.interest == 1 %}checked{% endif %}
+                          data-action-url="{{ url_for('linedance-tracker.toggle_interest', id=dance.id) }}"
+                          class="
+                            relative appearance-none
+                            w-12 h-12 2xl:w-6 2xl:h-6
+                            border-2 border-blue-500 rounded-sm
+                            bg-white
+                            transition-colors duration-200
+                            checked:bg-blue-500
+                            active:scale-95
+
+                            before:content-['💡']
+                            before:absolute
+                            before:inset-0
+                            before:flex
+                            before:items-center
+                            before:justify-center
+                            before:text-orange-500
+                            before:text-2xl 2xl:before:text-sm
+                            before:opacity-0
+                          "
+                        >
                          </td>
                       {% endif %}
                   </tr>

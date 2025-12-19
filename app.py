@@ -7,6 +7,7 @@ from flask import (
     redirect,
     session,
     send_from_directory,
+    make_response,
 )
 
 
@@ -134,7 +135,7 @@ def toggle_interest():
     cur.execute(query, params)
     conn.commit()
     conn.close()
-    return redirect(url_for("linedance-tracker.home"))
+    return make_response("", 204)
 
 
 @bp.route("/increment/", methods=["GET"])
@@ -168,7 +169,7 @@ def set_status():
     cur.execute(query, params)
     conn.commit()
     conn.close()
-    return redirect(url_for("linedance-tracker.home"))
+    return make_response("", 204)
 
 
 @app.errorhandler(404)
