@@ -11,7 +11,7 @@ from flask import (
 )
 
 
-from collections import namedtuple
+from dataclasses import dataclass
 import os
 
 import psycopg
@@ -26,7 +26,15 @@ assert all([x in os.environ for x in EXPECTED_KEYS]), set(EXPECTED_KEYS) - set(
 )
 
 
-dance = namedtuple("dance", ["id", "name", "keywords", "url", "status", "interest"])
+@dataclass
+class DanceClass:
+    id: int
+    dance_name: str
+    song_name: str
+    url: str
+    status: int
+    interest: int
+
 
 STORAGE_DIR = os.environ["STORAGE_DIR"]
 
@@ -74,30 +82,34 @@ def home():
         """
 with t1 as (
     with t0 as (
-        select dances.id, dances.name, dances.keywords, dances.url, progress.status
+        select dances.id, dances.url, progress.status
         , %(username)s as username
         from dances
         left join progress
         on dances.id = progress.id
         and progress.username = %(username)s
     )
-    select id, name, keywords, url, username,
+    select id, url, username,
     case when status is null then 0 else status end as status
     from t0
 )
 select
-  t1.id, t1.name, t1.keywords, t1.url, t1.status
+  t1.id, t2.dance_name, t2.song_name, t1.url, t1.status
   , case when interest.interest is null then 0 else interest.interest end as interest
 from t1
+INNER JOIN dance_descriptions t2
+ON t1.id = t2.id
+
 left join interest
 on t1.id = interest.id
 and t1.username = interest.username
-order by interest desc, status desc, name asc
+
+order by interest desc, status desc
 """,
         params,
     ).fetchall()
     conn.close()
-    dances = [dance(*x) for x in dances_list]
+    dances = [DanceClass(*x) for x in dances_list]
     return render_template("home.html", dances=dances, username=username)
 
 
