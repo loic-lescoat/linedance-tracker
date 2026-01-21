@@ -96,9 +96,11 @@ with t1 as (
 )
 select
   t1.id, t2.dance_name, t2.song_name, t2.song_artist, t1.url, t1.status
-  , case when interest.interest is null then 0 else interest.interest end as interest
+  , COALESCE(interest.interest, 0) AS interest
 from t1
-INNER JOIN dance_descriptions t2
+-- NOTE: perhaps should make this INNER JOIN in case data is empty
+-- -> would not be displayed instead
+LEFT JOIN dance_descriptions t2
 ON t1.id = t2.id
 
 left join interest
