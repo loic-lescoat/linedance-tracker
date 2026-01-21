@@ -81,6 +81,7 @@
                   <tr>
                       <th class="px-2 py-2 text-left">Dance Tutorial</th>
                       <th class="px-2 py-2 text-left">Song Name</th>
+                      <th class="px-2 py-2 text-left">Song Artist</th>
                       {% if username is not none %}
                       <th class="px-2 py-2 text-center">Learned?</th>
                       <th class="px-2 py-2 text-center">Interested?</th>
@@ -93,6 +94,7 @@
                   <tr class="{% if loop.index is even %}bg-gray-100{% else %}bg-white{% endif %}">
                       <td class="border px-4 py-2"><a href="{{ dance.url }}" target="_blank" class="text-blue-600 hover:underline">{{ dance.dance_name }}</a></td>
                       <td class="border px-4 py-2">{{ dance.song_name }}</td>
+                      <td class="border px-4 py-2">{{ dance.song_artist }}</td>
                       {% if username is not none %}
                       <td class="border px-4 py-2 text-center">
                         <input

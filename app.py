@@ -31,6 +31,7 @@ class DanceClass:
     id: int
     dance_name: str
     song_name: str
+    song_artist: str
     url: str
     status: int
     interest: int
@@ -94,7 +95,7 @@ with t1 as (
     from t0
 )
 select
-  t1.id, t2.dance_name, t2.song_name, t1.url, t1.status
+  t1.id, t2.dance_name, t2.song_name, t2.song_artist, t1.url, t1.status
   , case when interest.interest is null then 0 else interest.interest end as interest
 from t1
 INNER JOIN dance_descriptions t2
