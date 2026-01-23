@@ -33,7 +33,7 @@
     },
   }
 </script>
-    <script src="{{ url_for('linedance-tracker.static', filename='home.js') }}"></script>
+    <script defer src="{{ url_for('linedance-tracker.static', filename='home.js') }}"></script>
 </head>
 
 <body class="bg-gray-50 p-6 text-4xl 2xl:text-base">
@@ -75,6 +75,14 @@
                 class="text-blue-600 hover:underline">Tidal</a>
         </p>
       </div>
+        <div class="mb-4">
+          <input
+            id="tableFilter"
+            type="text"
+            placeholder="Filter dances, songs, or artists"
+            class="w-full border border-gray-300 p-2 rounded-lg"
+          >
+        </div>
         <div class="overflow-x-auto">
           <table class="table-fixed w-full bg-white border border-gray-200 rounded-lg">
               <thead class="bg-gray-200">
@@ -91,7 +99,13 @@
 
               <tbody>
                   {% for dance in dances %}
-                  <tr class="{% if loop.index is even %}bg-gray-100{% else %}bg-white{% endif %}">
+                  
+                    <tr
+                      class="{% if loop.index is even %}bg-gray-100{% else %}bg-white{% endif %}"
+                      data-dance="{{ dance.dance_name | lower }}"
+                      data-song="{{ dance.song_name | lower }}"
+                      data-artist="{{ dance.song_artist | lower }}"
+                    >
                       <td class="border px-4 py-2"><a href="{{ dance.url }}" target="_blank" class="text-blue-600 hover:underline">{{ dance.dance_name }}</a></td>
                       <td class="border px-4 py-2">{{ dance.song_name }}</td>
                       <td class="border px-4 py-2">{{ dance.song_artist }}</td>
