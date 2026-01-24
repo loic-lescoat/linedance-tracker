@@ -3,6 +3,9 @@ yt-dlp==2024.8.6
 gunicorn==23.0.0
 psycopg==3.2.10
 
+# for description extraction
+openai==2.14.0
+
 # development requirements
 beautifulsoup4==4.13.4
 pytest==8.4.1
