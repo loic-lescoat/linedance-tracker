@@ -148,7 +148,7 @@ def update(vid_raw: Dict[str, Any], cur: psycopg.Cursor) -> bool:
         data = [
             new_id,
             dance_metadata.dance_name or name,
-            dance_metadata.song_name or keywords,
+            dance_metadata.song_name or name,
             dance_metadata.song_artist,
             dance_metadata.counts,
         ]
