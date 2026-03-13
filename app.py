@@ -107,7 +107,7 @@ left join interest
 on t1.id = interest.id
 and t1.username = interest.username
 
-order by interest desc, status desc
+order by interest desc, status desc, t2.dance_name asc
 """,
         params,
     ).fetchall()
